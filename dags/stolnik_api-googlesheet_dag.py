@@ -3,7 +3,7 @@ from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
 import sys
 
-sys.path.append('/srv/stolnik_api-googlesheet')
+sys.path.append('dags/stolnik+google_sheet')
 
 from main import main
 
@@ -20,10 +20,10 @@ with DAG(
     dag_id='run_stolnik_skrapper',
     default_args=default_args,
     description='запуск скраппера цен и запись в гугл таблицу',
-    schedule_interval='daily',
+    schedule_interval='0 8 * * *',
     start_date=datetime(2025, 9, 26),
     catchup=True,
-    tags='StolnikApi+GoogleSheet',
+    tags=['stolnik', 'google_sheet'],
     max_active_runs=1
 ) as dag:
 
