@@ -22,7 +22,7 @@ with DAG(
     description='запуск скраппера цен и запись в гугл таблицу',
     schedule_interval='0 8 * * *',
     start_date=datetime(2025, 9, 26),
-    catchup=True,
+    catchup=False,
     tags=['stolnik', 'google_sheet'],
     max_active_runs=1
 ) as dag:
