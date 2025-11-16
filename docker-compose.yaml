@@ -9,6 +9,7 @@ x-airflow-common:
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
     AIRFLOW_UID: "50000"
+  user: "${AIRFLOW_UID}:0"
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
@@ -40,10 +41,20 @@ services:
     command:
       - -c
       - |
-        airflow db init && \
+        mkdir -p /opt/airflow/logs
+        chown -R ${AIRFLOW_UID}:0 /opt/airflow/logs
+
+        airflow db upgrade
+
         airflow users create \
           --username admin \
           --password admin \
+          --firstname Admin \
+          --lastname User \
+          --role Admin \
+          --email admin@example.com
+
+        echo "Airflow init completed!"
     restart: "no"
 
   airflow-webserver:
