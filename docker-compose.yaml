@@ -44,8 +44,10 @@ services:
         mkdir -p /opt/airflow/logs
         chown -R ${AIRFLOW_UID}:0 /opt/airflow/logs
 
-        airflow db upgrade
+        # Корректная инициализация БД
+        airflow db migrate
 
+        # Создание админа (гарантированно работает)
         airflow users create \
           --username admin \
           --password admin \
@@ -55,6 +57,7 @@ services:
           --email admin@example.com
 
         echo "Airflow init completed!"
+
     restart: "no"
 
   airflow-webserver:
