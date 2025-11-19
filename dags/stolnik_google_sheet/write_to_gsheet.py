@@ -3,13 +3,17 @@ from google.oauth2.service_account import Credentials
 import os
 from dotenv import load_dotenv
 from datetime import datetime
-from scrapper_stolnik import get_all_prices
+from pathlib import Path
+from stolnik_google_sheet.scrapper_stolnik import get_all_prices
+
 
 load_dotenv()
 
 
 def update_google_sheet():
-    GOOGLE_CREDENTIALS = os.getenv("GOOGLE_CREDENTIALS")
+    BASE_DIR = Path(__file__).resolve().parent
+    GOOGLE_CREDENTIALS = BASE_DIR / "innate-vigil-413910-fba5430aca0d.json"
+
     SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
     WORKSHEET_ID = int(os.getenv("WORKSHEET_ID"))
 

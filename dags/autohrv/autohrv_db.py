@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
+from sqlalchemy import create_engine, Column, String, Float, DateTime
 from sqlalchemy.orm import declarative_base
 from datetime import datetime
 import os
@@ -6,8 +6,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL = os.getenv('DATABASE_URL')
-c_engine = create_engine(DATABASE_URL)
+DATABASE_URL = os.getenv('AUTOHRV_DB')
+if not DATABASE_URL:
+    raise ValueError("AUTOHRV_DB is not set in environment variables!")
+
+engine = create_engine(DATABASE_URL)
 Base = declarative_base()
 
 
@@ -32,5 +35,5 @@ class CarsDataTable(Base):
     price = Column(String)
 
 
-Base.metadata.create_all(c_engine)
+Base.metadata.create_all(engine)
 

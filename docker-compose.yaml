@@ -1,19 +1,19 @@
-version: "3.8"
 
 x-airflow-common:
   &airflow-common
   build: .
-  image: apache/airflow:2.9.2
   environment:
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+    AUTOHRV_DB: postgresql+psycopg2://autohrv:autohrv@autohrv-postgres:5432/autohrv
+    PYTHONPATH: "/opt/airflow/dags"
     AIRFLOW_UID: "50000"
   user: "${AIRFLOW_UID}:0"
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
-    - ./config:/opt/airflow/config
+    - .config:/opt/airflow/config
   depends_on:
     postgres:
       condition: service_healthy
@@ -30,6 +30,24 @@ services:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U airflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  autohrv-postgres:
+    image: postgres:15
+    container_name: autohrv-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: autohrv
+      POSTGRES_PASSWORD: autohrv
+      POSTGRES_DB: autohrv
+    volumes:
+      - autohrv-db-volume:/var/lib/postgresql/data
+    ports:
+      - "5440:5432"   # наружный доступ, если вдруг захочешь
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U autohrv" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -59,6 +77,11 @@ services:
         echo "Airflow init completed!"
 
     restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      autohrv-postgres:
+        condition: service_healthy
 
   airflow-webserver:
     <<: *airflow-common
@@ -67,12 +90,23 @@ services:
     ports:
       - "8080:8080"
     restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      autohrv-postgres:
+        condition: service_healthy
 
   airflow-scheduler:
     <<: *airflow-common
     container_name: airflow-scheduler
     command: scheduler
     restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      autohrv-postgres:
+        condition: service_healthy
 
 volumes:
   postgres-db-volume:
+  autohrv-db-volume:
