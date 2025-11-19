@@ -1,11 +1,7 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
-import sys
-
-sys.path.append('dags/stolnik+google_sheet')
-
-from main import main
+from stolnik_google_sheet.stolnik_main import main as stolnik_main
 
 default_args = {
     'owner': 'airflow',
@@ -29,4 +25,4 @@ with DAG(
 
     run_script = PythonOperator(
         task_id='run_stolnik_skrapper',
-        python_callable=main)
+        python_callable=stolnik_main)
