@@ -28,8 +28,8 @@ CLICKHOUSE_TABLE = "raw_ads"
 BATCH_SIZE = 5000
 
 COLUMNS = [
+    "id",
     "source_id",
-    "ad_id",
     "title",
     "price",
     "area",
@@ -55,7 +55,7 @@ SELECT_QUERY = """
 
 
 def _get_watermark(ch_client) -> int:
-    result = ch_client.query(f"SELECT max(source_id) FROM {CLICKHOUSE_TABLE}")
+    result = ch_client.query(f"SELECT max(id) FROM {CLICKHOUSE_TABLE}")
     watermark = result.result_rows[0][0]
     return watermark or 0
 
@@ -73,12 +73,12 @@ def _fetch_batches(pg_conn, since_id: int, batch_size: int):
 
 
 def load_ads_incremental(batch_size: int = BATCH_SIZE) -> int:
-    """Copy new rows from Postgres ads into ClickHouse krovatik_raw.raw_ads.
+    """Copy new rows from PostgreSQL ads into ClickHouse.
 
-    Incremental by the Postgres serial `id` (loaded as `source_id`): each run
-    resumes from max(source_id) already in ClickHouse, so re-running (e.g. a
-    retried Airflow task) is safe and never duplicates work.
+    Incremental loading uses PostgreSQL serial `id`, which is stored
+    in ClickHouse as `id`. Each run resumes from max(id).
     """
+    
     ch_client = clickhouse_connect.get_client(
         host=CLICKHOUSE_HOST,
         port=CLICKHOUSE_PORT,
