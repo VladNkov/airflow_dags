@@ -8,14 +8,14 @@ default_args = {
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
-    'retry_delay': timedelta(minutes=5)
+    'retry_delay': timedelta(minutes=3)
 }
 
 with DAG(
     dag_id='krovatik_ads_load',
     default_args=default_args,
     description='инкрементальная загрузка объявлений Postgres -> ClickHouse',
-    schedule_interval="0 2 * * *",
+    schedule_interval="0 6 * * *",
     start_date=datetime(2026, 7, 31),
     catchup=False,
     tags=['krovatik'],

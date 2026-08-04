@@ -20,7 +20,7 @@ PG_TABLE = os.environ.get("PG_ADS_TABLE", "ads")
 
 CLICKHOUSE_HOST = os.environ.get("CLICKHOUSE_HOST", "127.0.0.1")
 CLICKHOUSE_PORT = int(os.environ.get("CLICKHOUSE_HTTP_PORT", 8123))
-CLICKHOUSE_DATABASE = os.environ.get("CLICKHOUSE_RAW_DATABASE", "krovatik_raw")
+CLICKHOUSE_DATABASE = os.environ.get("CLICKHOUSE_RAW_DATABASE", "krovatik_analytics")
 CLICKHOUSE_USER = os.environ["CLICKHOUSE_USER"]
 CLICKHOUSE_PASSWORD = os.environ["CLICKHOUSE_PASSWORD"]
 
