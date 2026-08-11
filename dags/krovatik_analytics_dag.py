@@ -1,7 +1,7 @@
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from datetime import datetime, timedelta
-import pendilum
+import pendulum
 
 
 PROJECT_DIR = "/opt/airflow/dags/krovatik-analytics"
@@ -51,7 +51,7 @@ with DAG(
     dbt_run = BashOperator(
         task_id="dbt_run",
         bash_command=(
-            f"{DBT_BIN} run"
+            f"{DBT_BIN} run "
             f"--project-dir {DBT_PROJECT_DIR} "
             f"--profiles-dir {DBT_PROFILES_DIR} "
             f"--target {DBT_TARGET}"
@@ -62,7 +62,7 @@ with DAG(
     dbt_test = BashOperator(
         task_id="dbt_test",
         bash_command=(
-            f"{DBT_BIN} test"
+            f"{DBT_BIN} test "
             f"--project-dir {DBT_PROJECT_DIR} "
             f"--profiles-dir {DBT_PROFILES_DIR} "
             f"--target prod"
