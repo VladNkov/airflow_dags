@@ -11,16 +11,16 @@ load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 logger = logging.getLogger(__name__)
 
 PG_HOST = os.environ["PG_HOST"]
-PG_PORT = int(os.environ.get("PG_PORT", 5432))
+PG_PORT = int(os.environ["PG_PORT"])
 PG_DATABASE = os.environ["PG_DATABASE"]
 PG_USER = os.environ["PG_USER"]
 PG_PASSWORD = os.environ["PG_PASSWORD"]
 PG_SCHEMA = os.environ.get("PG_SCHEMA", "public")
 PG_TABLE = os.environ.get("PG_ADS_TABLE", "ads")
 
-CLICKHOUSE_HOST = os.environ.get("CLICKHOUSE_HOST", "127.0.0.1")
-CLICKHOUSE_PORT = int(os.environ.get("CLICKHOUSE_HTTP_PORT", 8123))
-CLICKHOUSE_DATABASE = os.environ.get("CLICKHOUSE_RAW_DATABASE", "krovatik_analytics")
+CLICKHOUSE_HOST = os.environ["CLICKHOUSE_HOST"]
+CLICKHOUSE_PORT = int(os.environ["CLICKHOUSE_HTTP_PORT"])
+CLICKHOUSE_DATABASE = os.environ["CLICKHOUSE_RAW_DATABASE"]
 CLICKHOUSE_USER = os.environ["CLICKHOUSE_USER"]
 CLICKHOUSE_PASSWORD = os.environ["CLICKHOUSE_PASSWORD"]
 
