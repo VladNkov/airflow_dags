@@ -7,8 +7,18 @@ import pendulum
 PROJECT_DIR = "/opt/airflow/dags/krovatik-analytics"
 DBT_PROJECT_DIR = f"{PROJECT_DIR}/dbt_krovatik"
 DBT_PROFILES_DIR = "/opt/airflow/.dbt"
-DBT_BIN = "/home/airflow/dbt-venv/bin/dbt"
+UV_BIN = "/home/airflow/.local/bin/uv"
+UV_ENV = "/tmp/krovatik-venv"
 DBT_TARGET = "prod"
+
+UV_RUN = (
+    f"UV_PROJECT_ENVIRONMENT={UV_ENV} "
+    f"{UV_BIN} run "
+    f"--frozen "
+    f"--python /usr/local/bin/python "
+    f"--project {PROJECT_DIR}"
+)
+
 
 
 default_args = {
@@ -33,41 +43,45 @@ with DAG(
 ) as dag:
 
     load_ads = BashOperator(
-        task_id="load_ads",
-        bash_command=f"python {PROJECT_DIR}/scripts/load_ads.py",
-    )
-
-    dbt_seed = BashOperator(
-        task_id="dbt_seed",
-        bash_command=(
-            f"{DBT_BIN} seed "
-            f"--project-dir {DBT_PROJECT_DIR} "
-            f"--profiles-dir {DBT_PROFILES_DIR} "
-            f"--target {DBT_TARGET}"
+    task_id="load_ads",
+    bash_command=(
+        f"{UV_RUN} python "
+        f"{PROJECT_DIR}/scripts/load_ads.py"
     ),
     append_env=True,
-    )
+)
 
-    dbt_run = BashOperator(
-        task_id="dbt_run",
-        bash_command=(
-            f"{DBT_BIN} run "
-            f"--project-dir {DBT_PROJECT_DIR} "
-            f"--profiles-dir {DBT_PROFILES_DIR} "
-            f"--target {DBT_TARGET}"
+dbt_seed = BashOperator(
+    task_id="dbt_seed",
+    bash_command=(
+        f"{UV_RUN} dbt seed "
+        f"--project-dir {DBT_PROJECT_DIR} "
+        f"--profiles-dir {DBT_PROFILES_DIR} "
+        f"--target {DBT_TARGET}"
     ),
     append_env=True,
-    )
+)
 
-    dbt_test = BashOperator(
-        task_id="dbt_test",
-        bash_command=(
-            f"{DBT_BIN} test "
-            f"--project-dir {DBT_PROJECT_DIR} "
-            f"--profiles-dir {DBT_PROFILES_DIR} "
-            f"--target prod"
-        ),
-        append_env=True,
-    )
+dbt_run = BashOperator(
+    task_id="dbt_run",
+    bash_command=(
+        f"{UV_RUN} dbt run "
+        f"--project-dir {DBT_PROJECT_DIR} "
+        f"--profiles-dir {DBT_PROFILES_DIR} "
+        f"--target {DBT_TARGET}"
+    ),
+    append_env=True,
+)
 
-    load_ads >> dbt_seed >> dbt_run >> dbt_test
+dbt_test = BashOperator(
+    task_id="dbt_test",
+    bash_command=(
+        f"{UV_RUN} dbt test "
+        f"--project-dir {DBT_PROJECT_DIR} "
+        f"--profiles-dir {DBT_PROFILES_DIR} "
+        f"--target {DBT_TARGET}"
+    ),
+    append_env=True,
+)
+
+load_ads >> dbt_seed >> dbt_run >> dbt_test
