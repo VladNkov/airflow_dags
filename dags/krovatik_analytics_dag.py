@@ -1,6 +1,6 @@
 from airflow import DAG
 from airflow.operators.bash import BashOperator
-from datetime import datetime, timedelta
+from datetime import timedelta
 import pendulum
 
 
@@ -26,7 +26,7 @@ with DAG(
     default_args=default_args,
     description="Postgres → ClickHouse → dbt",
     schedule_interval="0 6 * * *",
-    start_date=datetime(2026, 7, 31, tz="Europe/Zagreb",),
+    start_date=pendulum.datetime(2026, 7, 31, tz="Europe/Zagreb",),
     catchup=False,
     tags=["krovatik"],
     max_active_runs=1,
