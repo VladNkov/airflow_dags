@@ -35,7 +35,7 @@ with DAG(
     dag_id="krovatik_ads_load",
     default_args=default_args,
     description="Postgres → ClickHouse → dbt",
-    schedule_interval="0 6 * * *",
+    schedule_interval="*/30 * * * *",
     start_date=pendulum.datetime(2026, 7, 31, tz="Europe/Zagreb",),
     catchup=False,
     tags=["krovatik"],
